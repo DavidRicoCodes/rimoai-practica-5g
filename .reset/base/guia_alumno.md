@@ -2,7 +2,7 @@
 
 ## Obtener el material
 
-La versión oficial de la práctica se distribuye mediante el tag `practica-5g-v1.0.0` de un
+La versión oficial de la práctica se distribuye mediante el tag `practica-5g-v1.0.1` de un
 repositorio público. En una máquina que todavía no tenga Git:
 
 ```bash
@@ -10,7 +10,7 @@ sudo apt-get update
 sudo apt-get install -y git
 
 git clone --depth 1 \
-  --branch practica-5g-v1.0.0 \
+  --branch practica-5g-v1.0.1 \
   https://github.com/DavidRicoCodes/rimoai-practica-5g.git \
   ~/RIMoai
 
@@ -27,12 +27,12 @@ hayas empezado a resolver la práctica: una segunda ejecución se bloquea para e
 No utilices `git pull` durante la práctica. Las actualizaciones se publicarán con un tag nuevo y
 se instalarán mediante una clonación limpia.
 
-Si el profesor proporciona el archivo alternativo `rimoai-practica-5g-v1.0.0.tar.gz`,
+Si el profesor proporciona el archivo alternativo `rimoai-practica-5g-v1.0.1.tar.gz`,
 descarga también su fichero `.sha256` y ejecuta:
 
 ```bash
-sha256sum -c rimoai-practica-5g-v1.0.0.tar.gz.sha256
-tar -xzf rimoai-practica-5g-v1.0.0.tar.gz -C ~
+sha256sum -c rimoai-practica-5g-v1.0.1.tar.gz.sha256
+tar -xzf rimoai-practica-5g-v1.0.1.tar.gz -C ~
 cd ~/RIMoai
 ./setup_inicial.sh
 export PRACTICA_DIR="$PWD"
@@ -160,19 +160,36 @@ En una instalación limpia de Ubuntu 22.04:
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+sudo curl -fsSL \
+  https://download.docker.com/linux/ubuntu/gpg \
   -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable" \
-  | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+sudo mv \
+  /etc/apt/sources.list.d/docker.list \
+  /etc/apt/sources.list.d/docker.list.disabled \
+  2>/dev/null || true
+
+sudo tee \
+  /etc/apt/sources.list.d/docker.sources \
+  >/dev/null <<'EOF'
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: jammy
+Components: stable
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io \
   docker-buildx-plugin docker-compose-plugin
 sudo systemctl enable --now docker
 ```
+
+Este bloque utiliza el formato Deb822, con un dato por línea, para que las líneas visuales de un
+PDF no puedan partir la entrada de Docker. Si existe un `docker.list` de un intento anterior, se
+conserva como `docker.list.disabled` y deja de bloquear APT.
 
 Si quieres utilizar Docker sin `sudo`, añade tu usuario al grupo y vuelve a iniciar sesión:
 
@@ -232,8 +249,10 @@ cd "$PRACTICA_DIR"
 Comprobación:
 
 ```bash
-test -x "$PRACTICA_DIR/ue/openairinterface5g/cmake_targets/ran_build/build/nr-uesoftmodem"
-test -f "$PRACTICA_DIR/ue/openairinterface5g/cmake_targets/ran_build/build/liboai_zmqdevif.so"
+OAI_DIR="$PRACTICA_DIR/ue/openairinterface5g"
+UE_BUILD="$OAI_DIR/cmake_targets/ran_build/build"
+test -x "$UE_BUILD/nr-uesoftmodem"
+test -f "$UE_BUILD/liboai_zmqdevif.so"
 ```
 
 ## 6. Ejecución de los componentes
@@ -262,7 +281,9 @@ Arranca el UE únicamente cuando el gNB haya completado su inicialización:
 
 ```bash
 cd "$PRACTICA_DIR"
-sudo ./ue/openairinterface5g/cmake_targets/ran_build/build/nr-uesoftmodem \
+OAI_DIR="$PRACTICA_DIR/ue/openairinterface5g"
+UE_BUILD="$OAI_DIR/cmake_targets/ran_build/build"
+sudo "$UE_BUILD/nr-uesoftmodem" \
   -O ./ue/oaiue_zmq.conf
 ```
 
