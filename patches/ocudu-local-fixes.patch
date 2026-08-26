@@ -1,0 +1,37 @@
+diff --git a/apps/units/o_cu_cp/o_cu_cp_builder.cpp b/apps/units/o_cu_cp/o_cu_cp_builder.cpp
+index a2f7e801d2..1e127abac5 100644
+--- a/apps/units/o_cu_cp/o_cu_cp_builder.cpp
++++ b/apps/units/o_cu_cp/o_cu_cp_builder.cpp
+@@ -100,8 +100,9 @@ o_cu_cp_unit ocudu::build_o_cu_cp(const o_cu_cp_unit_config& unit_cfg, const o_c
+                                                                      dependencies.executor_mapper->n2_rx_executor())));
+   }
+ 
+-  for (unsigned i = 0, e = n2_clients.size(); i != e; ++i) {
+-    cu_cp_cfg.ngap.n2_gws[i] = n2_clients[i].get();
++  cu_cp_cfg.ngap.n2_gws.reserve(n2_clients.size());
++  for (const auto& n2_client : n2_clients) {
++    cu_cp_cfg.ngap.n2_gws.push_back(n2_client.get());
+   }
+ 
+   ocucp::o_cu_cp_dependencies ocu_dependencies;
+diff --git a/include/ocudu/phy/upper/channel_processors/pdsch/formatters.h b/include/ocudu/phy/upper/channel_processors/pdsch/formatters.h
+index 06697cb9ad..a859f6a38b 100644
+--- a/include/ocudu/phy/upper/channel_processors/pdsch/formatters.h
++++ b/include/ocudu/phy/upper/channel_processors/pdsch/formatters.h
+@@ -8,6 +8,7 @@
+ #include "ocudu/phy/support/re_pattern_formatters.h"
+ #include "ocudu/phy/upper/channel_processors/pdsch/pdsch_processor.h"
+ #include "ocudu/ran/pdsch/pdsch_context_formatter.h"
++#include "fmt/ranges.h"
+ 
+ namespace fmt {
+ 
+@@ -63,7 +64,7 @@ struct formatter<ocudu::pdsch_processor::pdu_t> {
+     helper.format_if_verbose(ctx, "bwp=[{}, {})", pdu.bwp_start_rb, pdu.bwp_start_rb + pdu.bwp_size_rb);
+     helper.format_always(ctx, "prb={}", pdu.freq_alloc);
+     helper.format_always(ctx, "symb=[{}, {})", pdu.start_symbol_index, pdu.start_symbol_index + pdu.nof_symbols);
+-    helper.format_always(ctx, ocudu::span<const ocudu::pdsch_processor::codeword_description>(pdu.codewords));
++    helper.format_always(ctx, fmt::join(pdu.codewords, " "));
+ 
+     helper.format_if_verbose(ctx, "n_id={}", pdu.n_id);
+     helper.format_if_verbose(

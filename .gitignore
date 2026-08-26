@@ -1,0 +1,19 @@
+# Build products.
+/ran/ocudu/build/
+/ue/openairinterface5g/cmake_targets/ran_build/
+
+# Runtime output.
+*.log
+*.pcap
+core/open5gs/subscriber_db.csv
+.setup-inicial-completado
+
+# Editor and OS files.
+.cache/
+.vscode/
+*~
+
+# Local packaging output.
+dist/
+*.tar.gz
+*.tar.gz.sha256

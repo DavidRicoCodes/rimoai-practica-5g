@@ -1,0 +1,10 @@
+/README.md text eol=lf
+/guia_alumno.md text eol=lf
+/setup_inicial.sh text eol=lf
+/reset.sh text eol=lf
+/scripts/*.sh text eol=lf
+/core/docker-compose.yml text eol=lf
+/core/open5gs/open5gs.env text eol=lf
+/ran/gnb_zmq.yaml text eol=lf
+/ue/oaiue_zmq.conf text eol=lf
+/patches/*.patch text eol=lf

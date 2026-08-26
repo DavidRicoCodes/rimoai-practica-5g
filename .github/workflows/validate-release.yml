@@ -1,0 +1,15 @@
+name: Validar material del alumno
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar distribución
+        run: |
+          ./scripts/check_release.sh
+          ./scripts/check_material.sh
