@@ -85,7 +85,7 @@ if command -v docker >/dev/null 2>&1 && ! docker compose version >/dev/null 2>&1
 fi
 
 printf '%s\n' \
-  "tag=practica-5g-v1.0.1" \
+  "tag=practica-5g-v1.1.0" \
   "fecha_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   "avisos=$warnings" > "$MARKER"
 

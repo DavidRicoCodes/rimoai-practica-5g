@@ -58,6 +58,29 @@ done
 [[ -x "$PRACTICA_DIR/ue/openairinterface5g/cmake_targets/build_oai" ]] \
   || fail 'falta el ejecutable de build del UE'
 
+for guide in \
+  "$PRACTICA_DIR/guia_alumno.md" \
+  "$PRACTICA_DIR/.reset/base/guia_alumno.md"
+do
+  ! grep -Fq './build_oai -I -w ZMQ' "$guide" \
+    || fail 'una guía conserva la secuencia OAI incompatible con Ninja'
+  grep -Fq './build_oai -I' "$guide" \
+    || fail 'falta la instalación de dependencias OAI corregida'
+  grep -Fq './build_oai --nrUE -w ZMQ --ninja' "$guide" \
+    || fail 'falta el build OAI con Ninja'
+done
+
+grep -Eq '^[[:space:]]*ipv4_address:[[:space:]]*10\.54\.1\.2([[:space:]]|$)' \
+  "$PRACTICA_DIR/core/docker-compose.yml" \
+  || fail 'el contenedor no conserva el decoy de red esperado'
+grep -Eq '^[[:space:]-]*subnet:[[:space:]]*10\.54\.1\.0/24([[:space:]]|$)' \
+  "$PRACTICA_DIR/core/docker-compose.yml" \
+  || fail 'la subred no conserva el decoy esperado'
+grep -Fxq 'OPEN5GS_IP=10.55.1.2' "$PRACTICA_DIR/core/open5gs/open5gs.env" \
+  || fail 'OPEN5GS_IP no conserva el decoy incoherente esperado'
+grep -Fxq 'UPF_ADVERTISE_IP=10.56.1.2' "$PRACTICA_DIR/core/open5gs/open5gs.env" \
+  || fail 'UPF_ADVERTISE_IP no conserva el decoy incoherente esperado'
+
 [[ -L "$PRACTICA_DIR/ran/ocudu/cmake/modules/FindBackward.cmake" ]] \
   || fail 'se ha perdido un enlace simbólico de OCUDU'
 [[ -L "$PRACTICA_DIR/ran/ocudu/LICENSES/BSD-3-Clause-Open-MPI.txt" ]] \

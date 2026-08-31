@@ -13,7 +13,7 @@ sudo apt-get update
 sudo apt-get install -y git
 
 git clone --depth 1 \
-  --branch practica-5g-v1.0.1 \
+  --branch practica-5g-v1.1.0 \
   https://github.com/DavidRicoCodes/rimoai-practica-5g.git \
   ~/RIMoai
 
@@ -23,7 +23,7 @@ export PRACTICA_DIR="$PWD"
 ```
 
 Continúa con [`guia_alumno.md`](guia_alumno.md). La versión oficial de esta distribución es
-`practica-5g-v1.0.1`.
+`practica-5g-v1.1.0`.
 
 No utilices `git pull` durante la resolución. Una actualización de la práctica se publicará con
 un tag distinto y se realizará mediante una clonación limpia.
